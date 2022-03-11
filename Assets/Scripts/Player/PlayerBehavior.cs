@@ -15,7 +15,7 @@ namespace Player
         private PlayerMovement _movement;
         private PlayerAnimation _animation;
         private PlayerInteractionWithObjects _interaction;
-
+        
         private void Start()
         {
             MoveToNextObject();
@@ -25,7 +25,7 @@ namespace Player
         {
             var closestInteractableObject = _interaction.GetClosestObject(agent.transform.position);
             var destination = startPoint.position;
-
+            
             if (closestInteractableObject != null)
             {
                 destination = closestInteractableObject.position;
@@ -54,13 +54,12 @@ namespace Player
             
             var playerAction = _interaction.GetAction(_animation);
 
-            StartCoroutine(playerAction.DoAnimation((actionCompleted) =>
+            StartCoroutine(playerAction.DoAnimation((actionCompleted =>
             {
                 if (!actionCompleted) return;
-                
-                interactableObject.Interact();
                 MoveToNextObject();
-            }));
+                
+            }), interactableObject));
 
         }
 

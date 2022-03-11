@@ -15,8 +15,6 @@ namespace InteractableObjects
         {
             _listOfObjects.Add(obj);
             _activeObjects.Remove(obj);
-
-            obj.Hide(); 
         }
 
         public T GetObject<T>() where T : IInteractable, new()

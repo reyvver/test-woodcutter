@@ -10,9 +10,8 @@ namespace InteractableObjects
         [SerializeField] private List<Transform> treesPosition;
         [Space]
         [SerializeField] private GameObject prefabTree;
-        [SerializeField] private GameObject prefabLog;
-
-
+        [SerializeField] private GameObject prefabWood;
+        
         private void Awake()
         {
             CreateTrees();
@@ -42,6 +41,24 @@ namespace InteractableObjects
         {
             var tree = ObjectsOnScene.objects.GetObject<TreeObject>();
             tree.Create(prefabTree, objectsContainer, position);
+            tree.treeDestroyed += CreateWood;
+        }
+        
+        private void CreateWood(TreeObject tree)
+        {
+            tree.treeDestroyed -= CreateWood;
+
+            foreach (var woodPos in tree.treeScript.wood)
+            {
+                CreateLog(woodPos.position, woodPos.rotation);
+            }
+        }
+
+        private void CreateLog(Vector3 position, Quaternion rotation)
+        {
+            var log = ObjectsOnScene.objects.GetObject<WoodObject>();
+            log.Create(prefabWood, objectsContainer, position);
+            log.gameObject.transform.rotation = rotation;
         }
 
         private bool TreeWithinArea(Vector3 targetDestination)
