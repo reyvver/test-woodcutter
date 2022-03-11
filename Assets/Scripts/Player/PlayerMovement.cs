@@ -9,14 +9,12 @@ namespace Player
     {
         public event Action PlayerStopped;
         
-        private NavMeshAgent _playerAgent;
-        private Transform _playerTransform;
-        private Vector3 destination;
+        private readonly NavMeshAgent _playerAgent;
+        private readonly Transform _playerTransform;
+        private Vector3 _destination;
         
         private const float DistanceFromObject = 1.5f;
-        private const float RotationTime = 2f;
-        private const float RotationSpeed = 3f;
-        
+
         public PlayerMovement(NavMeshAgent agent)
         {
             _playerAgent = agent;
@@ -30,10 +28,10 @@ namespace Player
         
         public void MoveTo(Vector3 position)
         {
-            destination = position;
+            _destination = position;
             
             _playerAgent.isStopped = false;
-            _playerAgent.SetDestination(destination);
+            _playerAgent.SetDestination(_destination);
         }
 
         public IEnumerator WaitToStop()
@@ -49,10 +47,9 @@ namespace Player
             PlayerStopped?.Invoke();
         }
         
-
         private bool WaitForDestinationReached()
         {
-            return Vector3.Distance(_playerTransform.position, destination) < DistanceFromObject;
+            return Vector3.Distance(_playerTransform.position, _destination) < DistanceFromObject;
         }
     }
 }

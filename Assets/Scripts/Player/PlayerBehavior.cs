@@ -1,4 +1,3 @@
-using InteractableObjects;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -11,35 +10,15 @@ namespace Player
         [SerializeField] private Animator animator;
         [Space]
         [SerializeField] private Transform startPoint;
+        [SerializeField] private GameObject axeGameObject;
 
         private PlayerMovement _movement;
         private PlayerAnimation _animation;
         private PlayerInteractionWithObjects _interaction;
 
-        private TreeAction _chopTree;
-        private Coroutine interaction;
-
-        private void Awake()
-        {
-            Init();
-        }
-
         private void Start()
         {
             MoveToNextObject();
-        }
-
-        void Init()
-        {
-            _movement = new PlayerMovement(agent);
-            _movement.PlayerStopped += OnDestinationReached;
-            _movement.PlaceAt(startPoint.position, startPoint.rotation);
-            
-            _animation = new PlayerAnimation(animator);
-            _animation.PlayAnimation(PlayerAnimation.AnimationType.Idle);
-            
-            _interaction = new PlayerInteractionWithObjects();
-            _chopTree = new TreeAction(_animation);
         }
 
         void MoveToNextObject()
@@ -73,29 +52,38 @@ namespace Player
                 return;
             }
             
-            if (interaction != null)
-                StopCoroutine(interaction);
-            
-            IPlayerAction action = null;
+            var playerAction = _interaction.GetAction(_animation);
 
-            switch (interactableObject)
+            StartCoroutine(playerAction.DoAnimation((actionCompleted) =>
             {
-                case TreeObject tree:
-                {
-                    action = _chopTree;
-                    break;
-                }
-            }
-
-            StartCoroutine(action.DoAnimation((myReturnValue) => {
-                if (myReturnValue)
-                {
-                    interactableObject.Interact();
-                    MoveToNextObject();
-                }
+                if (!actionCompleted) return;
+                
+                interactableObject.Interact();
+                MoveToNextObject();
             }));
 
         }
+
+        #region Plumbing
+
+        private void Awake()
+        {
+            Init();
+        }
+        
+        void Init()
+        {
+            _movement = new PlayerMovement(agent);
+            _movement.PlayerStopped += OnDestinationReached;
+            _movement.PlaceAt(startPoint.position, startPoint.rotation);
+            
+            _animation = new PlayerAnimation(animator);
+            _animation.PlayAnimation(PlayerAnimation.AnimationType.Idle);
+            
+            _interaction = new PlayerInteractionWithObjects(axeGameObject);
+        }
+
+        #endregion
 
     }
 }
