@@ -5,8 +5,12 @@ namespace InteractableObjects
 {
     public class TreeGameObject : MonoBehaviour
     {
+        [SerializeField] private ParticleSystem particlesLeaves;
+        [SerializeField] private ParticleSystem particlesAppear;
+        [SerializeField] private ParticleSystem particlesDisappear;
+
         public List<Transform> wood;
-        
+
         private float _hitTime = 1f;
         private float _hitTimer = 0;
         private bool _canHit = true;
@@ -28,8 +32,19 @@ namespace InteractableObjects
         {
              if(!_canHit) return;
 
+             particlesLeaves.Play();
             _hitTimer = 0;
             _canHit = false;
+        }
+
+        public void PlayDisappearEffect()
+        {
+            particlesDisappear.Play();
+        }
+
+        public void PlayAppearEffect()
+        {
+            particlesAppear.Play();
         }
 
     }

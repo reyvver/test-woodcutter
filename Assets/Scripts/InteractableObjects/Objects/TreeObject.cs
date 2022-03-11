@@ -12,26 +12,31 @@ namespace InteractableObjects
 
         private const string GameObjectName = "Tree";
         private GameObject _treeObject;
+        private MeshRenderer visual;
 
         public void Create(GameObject prefab, Transform parent, Vector3 objPosition)
         {
             if (_treeObject != null)
             {
                 gameObject.transform.position = objPosition;
-                gameObject.SetActive(true);
-
+                visual.enabled = true;
+                treeScript.PlayAppearEffect();
+                
                 return;
             }
             
             _treeObject = ObjectManager.CreateNewObject(prefab, parent, objPosition);
             treeScript = _treeObject.GetComponent<TreeGameObject>();
+            visual = _treeObject.GetComponent<MeshRenderer>();
             _treeObject.name = GameObjectName;
         }
 
         public void Hide()
         {
             treeDestroyed?.Invoke(this);
-            gameObject.SetActive(false);
+            
+            treeScript.PlayDisappearEffect();
+            visual.enabled = false;
         }
         
         public void Interact()
