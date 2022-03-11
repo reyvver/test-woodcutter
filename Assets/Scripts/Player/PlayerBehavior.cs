@@ -4,6 +4,7 @@ using UnityEngine.AI;
 
 namespace Player
 {
+    [RequireComponent(typeof(PlayerLogPlacement))]
     public class PlayerBehavior : MonoBehaviour
     {
         [SerializeField] private NavMeshAgent agent;
@@ -14,6 +15,7 @@ namespace Player
 
         private PlayerMovement _movement;
         private PlayerAnimation _animation;
+        private PlayerLogPlacement _placement;
         private PlayerInteractionWithObjects _interaction;
         
         private void Start()
@@ -26,7 +28,7 @@ namespace Player
             var closestInteractableObject = _interaction.GetClosestObject(agent.transform.position);
             var destination = startPoint.position;
             
-            if (closestInteractableObject != null)
+            if (closestInteractableObject != null &&  _placement.logPlacedCount != 3)
             {
                 destination = closestInteractableObject.position;
             }
@@ -42,10 +44,22 @@ namespace Player
             StartCoroutine(_movement.WaitToStop());
         }
 
-        void OnDestinationReached()
+        void OnDestinationReached(Vector3 destination)
+        {
+            if (destination == startPoint.position)
+            {
+                _placement.HideAll();
+                MoveToNextObject();
+                return;
+            }
+
+            InteractWithObject();
+        }
+
+        void InteractWithObject()
         {
             var interactableObject = _interaction.closestObject;
-            
+
             if (interactableObject == null)
             {
                 _animation.PlayAnimation(PlayerAnimation.AnimationType.Idle);
@@ -60,9 +74,8 @@ namespace Player
                 MoveToNextObject();
                 
             }), interactableObject));
-
         }
-
+        
         #region Plumbing
 
         private void Awake()
@@ -78,8 +91,10 @@ namespace Player
             
             _animation = new PlayerAnimation(animator);
             _animation.PlayAnimation(PlayerAnimation.AnimationType.Idle);
-            
-            _interaction = new PlayerInteractionWithObjects(axeGameObject);
+
+            _placement = gameObject.GetComponent<PlayerLogPlacement>();
+            _placement.HideAll();
+            _interaction = new PlayerInteractionWithObjects(axeGameObject,_placement);
         }
 
         #endregion

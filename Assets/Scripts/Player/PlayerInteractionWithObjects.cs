@@ -8,10 +8,12 @@ namespace Player
         private GameObject _axe;
         private TreeAction _chopTree;
         private WoodAction _collectWood;
+        private PlayerLogPlacement _placement;
         
-        public PlayerInteractionWithObjects(GameObject axe)
+        public PlayerInteractionWithObjects(GameObject axe, PlayerLogPlacement placement)
         {
             _axe = axe;
+            _placement = placement;
         }
         public IInteractable closestObject { get; private set; }
         public IInteractable GetClosestObject(Vector3 relativePosition)
@@ -34,13 +36,12 @@ namespace Player
 
                 case WoodObject wood:
                 {
-                    return _collectWood ??= new WoodAction(animation);
+                    return _collectWood ??= new WoodAction(animation, _placement);
                 }
             }
 
             return null;
         }
-
         private void ClearInteraction()
         {
             _axe.SetActive(false);

@@ -7,7 +7,7 @@ namespace Player
 {
     public class PlayerMovement
     {
-        public event Action PlayerStopped;
+        public event Action<Vector3> PlayerStopped;
         
         private readonly NavMeshAgent _playerAgent;
         private readonly Transform _playerTransform;
@@ -44,7 +44,7 @@ namespace Player
         private void DestinationReached()
         {
             _playerAgent.isStopped = true;
-            PlayerStopped?.Invoke();
+            PlayerStopped?.Invoke(_destination);
         }
         
         private bool WaitForDestinationReached()
