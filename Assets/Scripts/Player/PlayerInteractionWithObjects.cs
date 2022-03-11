@@ -9,7 +9,8 @@ namespace Player
         private TreeAction _chopTree;
         private WoodAction _collectWood;
         private PlayerLogPlacement _placement;
-        
+
+        public bool newObjectAppeared => ObjectsOnScene.objects.count > 0;
         public PlayerInteractionWithObjects(GameObject axe, PlayerLogPlacement placement)
         {
             _axe = axe;
@@ -44,6 +45,7 @@ namespace Player
         }
         private void ClearInteraction()
         {
+            closestObject = null;
             _axe.SetActive(false);
         }
     }

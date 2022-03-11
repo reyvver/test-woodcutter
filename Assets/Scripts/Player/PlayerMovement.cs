@@ -14,6 +14,8 @@ namespace Player
         private Vector3 _destination;
         
         private const float DistanceFromObject = 1.5f;
+        private const float RotationTime = 2f;
+        private const float RotationSpeed = 3f;
 
         public PlayerMovement(NavMeshAgent agent)
         {
@@ -50,6 +52,21 @@ namespace Player
         private bool WaitForDestinationReached()
         {
             return Vector3.Distance(_playerTransform.position, _destination) < DistanceFromObject;
+        }
+        
+        public IEnumerator LookAtInteractableObject(Vector3 target)
+        {
+            float time = 0;
+            while (time <= RotationTime) 
+            {
+                var direction = (target - _playerTransform.position).normalized;
+                var lookRotation = Quaternion.LookRotation(direction);
+
+                _playerTransform.rotation = Quaternion.Slerp(_playerTransform.rotation, lookRotation, Time.deltaTime * RotationSpeed);                
+                time += Time.deltaTime;
+       
+                yield return null;
+            }
         }
     }
 }

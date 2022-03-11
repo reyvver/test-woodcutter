@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -49,8 +50,14 @@ namespace Player
             if (destination == startPoint.position)
             {
                 _placement.HideAll();
-                MoveToNextObject();
-                return;
+                _animation.PlayAnimation(PlayerAnimation.AnimationType.Idle);
+
+                if (_interaction.closestObject != null)
+                {
+                    MoveToNextObject();
+                    return;
+                }
+                StartCoroutine(WaitObjectToAppear());
             }
 
             InteractWithObject();
@@ -59,21 +66,23 @@ namespace Player
         void InteractWithObject()
         {
             var interactableObject = _interaction.closestObject;
-
-            if (interactableObject == null)
-            {
-                _animation.PlayAnimation(PlayerAnimation.AnimationType.Idle);
-                return;
-            }
+            if (_interaction.closestObject == null) return;
             
             var playerAction = _interaction.GetAction(_animation);
 
+            StartCoroutine(_movement.LookAtInteractableObject(interactableObject.position));
             StartCoroutine(playerAction.DoAnimation((actionCompleted =>
             {
                 if (!actionCompleted) return;
                 MoveToNextObject();
                 
             }), interactableObject));
+        }
+
+        IEnumerator WaitObjectToAppear()
+        {
+            yield return new WaitUntil(() => _interaction.newObjectAppeared);
+            MoveToNextObject();
         }
         
         #region Plumbing

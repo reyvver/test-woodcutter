@@ -7,9 +7,11 @@ namespace InteractableObjects
     {
         private static ObjectsOnScene _instance;
         public static ObjectsOnScene objects => _instance ??= new ObjectsOnScene();
-        
+
         private readonly List<IInteractable> _listOfObjects = new List<IInteractable>();
         private readonly List<IInteractable> _activeObjects = new List<IInteractable>();
+
+        public int count => _activeObjects.Count;
         
         public void HideObject(IInteractable obj)
         {

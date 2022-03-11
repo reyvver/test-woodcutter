@@ -6,10 +6,8 @@ namespace InteractableObjects
     {
         public GameObject gameObject => _woodObject;
         public Vector3 position => gameObject.transform.position;
-        public int interactionPriority => (int)ObjectType;
         
         private GameObject _woodObject;
-        private const InteractableObjectType ObjectType = InteractableObjectType.Wood;
         private const string GameObjectName = "Wood";
 
         public void Create(GameObject prefab, Transform parent, Vector3 objPosition)

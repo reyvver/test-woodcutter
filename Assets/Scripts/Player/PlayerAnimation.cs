@@ -63,12 +63,10 @@ namespace Player
             }
         }
 
-
         private void SetIdleAnimation()
         {
             _animator.ResetTrigger(Chop);
             _animator.ResetTrigger(PickUp);
-
             _animator.SetBool(Walk, false);
         }
 
