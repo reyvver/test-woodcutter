@@ -10,13 +10,14 @@ namespace InteractableObjects
         [SerializeField] private ParticleSystem particlesDisappear;
 
         public List<Transform> wood;
-
+        public bool CollisionEnabled { private get; set; }
         private float _hitTime = 1f;
         private float _hitTimer = 0;
         private bool _canHit = true;
 
         private void OnCollisionEnter(Collision collision)
         {
+            if (!CollisionEnabled) return;
             TakeDamage();
         }
         

@@ -8,40 +8,50 @@ namespace InteractableObjects
         public Vector3 position => _treeObject.transform.position;
         public GameObject gameObject => _treeObject;
         public TreeGameObject treeScript { get; private set; }
-        public event Action<TreeObject> treeDestroyed; 
+        public event Action<TreeObject> TreeDestroyed; 
 
         private const string GameObjectName = "Tree";
         private GameObject _treeObject;
-        private MeshRenderer visual;
+        private MeshRenderer _visual;
 
         public void Create(GameObject prefab, Transform parent, Vector3 objPosition)
         {
             if (_treeObject != null)
             {
                 gameObject.transform.position = objPosition;
-                visual.enabled = true;
-                treeScript.PlayAppearEffect();
-                
+                treeScript.CollisionEnabled = true;
+                _visual.enabled = true;
+
                 return;
             }
             
             _treeObject = ObjectManager.CreateNewObject(prefab, parent, objPosition);
-            treeScript = _treeObject.GetComponent<TreeGameObject>();
-            visual = _treeObject.GetComponent<MeshRenderer>();
             _treeObject.name = GameObjectName;
+
+            treeScript = _treeObject.GetComponent<TreeGameObject>();
+            treeScript.CollisionEnabled = true;
+            
+            _visual = _treeObject.GetComponent<MeshRenderer>();
         }
 
         public void Hide()
         {
-            treeDestroyed?.Invoke(this);
+            TreeDestroyed?.Invoke(this);
             
             treeScript.PlayDisappearEffect();
-            visual.enabled = false;
+            treeScript.CollisionEnabled = false;
+            
+            _visual.enabled = false;
         }
         
         public void Interact()
         {
             ObjectsOnScene.objects.HideObject(this);
+        }
+
+        public void PlayAppearEffect()
+        {
+            treeScript.PlayAppearEffect();
         }
         
     }

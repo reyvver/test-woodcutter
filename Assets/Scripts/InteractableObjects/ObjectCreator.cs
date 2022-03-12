@@ -24,7 +24,7 @@ namespace InteractableObjects
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out RaycastHit hit) && TreeWithinArea(hit.point))
-                CreateTree(hit.point);
+                CreateTree(hit.point, true);
         }
 
         private void CreateTrees()
@@ -37,16 +37,19 @@ namespace InteractableObjects
             }
         }
 
-        private void CreateTree(Vector3 position)
+        private void CreateTree(Vector3 position, bool playEffect = false)
         {
             var tree = ObjectsOnScene.objects.GetObject<TreeObject>();
             tree.Create(prefabTree, objectsContainer, position);
-            tree.treeDestroyed += CreateWood;
+            tree.TreeDestroyed += CreateWood;
+            
+            if (playEffect)
+                tree.PlayAppearEffect();
         }
         
         private void CreateWood(TreeObject tree)
         {
-            tree.treeDestroyed -= CreateWood;
+            tree.TreeDestroyed -= CreateWood;
 
             foreach (var woodPos in tree.treeScript.wood)
             {
